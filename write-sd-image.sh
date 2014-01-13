@@ -1,7 +1,7 @@
 #!/bin/bash
 # write image to sd card via builtin mac sd slot
 
-BLK_SZ=1048576
+BLK_SZ=16777216
 
 # sanity check
 uname=`uname -s | fgrep Darwin`
@@ -60,7 +60,7 @@ sudo diskutil unmountDisk ${target_disk} || exit 1
 echo
 epoch=`date +%s`
 out_f="/tmp/.dd.out.$$.${epoch}"
-sudo -b dd if="${image_file}" of="/dev/${target_disk}" bs=${BLK_SZ} 2> ${out_f}
+sudo -b dd if="${image_file}" of="/dev/r${target_disk}" bs=${BLK_SZ} 2> ${out_f}
 
 # wait for dd to finish
 pid=`pgrep -n -u 0 -x dd`
