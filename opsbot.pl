@@ -236,7 +236,7 @@ while (my $line = $bot->getline) {
         $self->send("JOIN :$channel");
 
         while (my $line = $self->getline) {
-            last if $line =~ /JOIN :$channel\z/o;
+            last if $line =~ /JOIN :$channel\z/io;
         }
 
         return $self->channel($channel);
@@ -298,11 +298,11 @@ while (my $line = $bot->getline) {
         $self->send("NAMES $channel");
 
         while (my $line = $self->getline) {
-            if ($line =~ /\A\S+ $begin $nick . $channel :(.*)\z/o) {
+            if ($line =~ /\A\S+ $begin $nick . $channel :(.*)\z/io) {
                 push(@name, split(/\s+/, $1));
                 next;
             }
-            if ($line =~ /\A\S+ $end $nick $channel :/o) {
+            if ($line =~ /\A\S+ $end $nick $channel :/io) {
                 last;
             }
         }
@@ -431,7 +431,7 @@ while (my $line = $bot->getline) {
         my $me      = $self->nick;
 
         # bot command request?
-        if ($line =~ /\A:([^!]+)!\S+ PRIVMSG $channel :@(.+)\z/o) {
+        if ($line =~ /\A:([^!]+)!\S+ PRIVMSG $channel :@(.+)\z/io) {
             my $nick    = $1;
             my @arg     = split(/\s+/, $2, 2);
             my $cmd     = 'do_' . shift(@arg);
@@ -441,7 +441,7 @@ while (my $line = $bot->getline) {
         }
 
         # someone joined channel or changed nick. change mode?
-        elsif ($line =~ /\A:([^!]+)!\S+ JOIN :$channel/o
+        elsif ($line =~ /\A:([^!]+)!\S+ JOIN :$channel/io
             || $line =~ /\A:([^!]+)!\S+ NICK :(\S+)/o
         ) {
             my $nick    = $2 ? $2 : $1;
@@ -458,12 +458,12 @@ while (my $line = $bot->getline) {
         }
 
         # bot kicked out of channel
-        elsif ($line =~ /\A:([^!]+)!\S+ KICK $channel $me /o) {
+        elsif ($line =~ /\A:([^!]+)!\S+ KICK $channel $me /io) {
             $self->log_fatal($line);
         }
 
         # bot given operator privileges or had them taken away
-        elsif ($line =~ /\A:([^!]+)!\S+ MODE $channel ([\+\-]o) $me\s*\z/o) {
+        elsif ($line =~ /\A:([^!]+)!\S+ MODE $channel ([\+\-]o) $me\s*\z/io) {
             my $nick    = $1;
             my $mode    = $2;
             if ($mode eq '+o') {
