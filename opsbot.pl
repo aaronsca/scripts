@@ -261,14 +261,18 @@ while (my $line = $bot->getline) {
         my $self    = $_[0];
         my $mesg    = $_[1] // q{};
 
-        $self->send(sprintf('PRIVMSG %s :%s', $self->channel, $mesg));
+        if (length($mesg)) {
+            $self->send(sprintf('PRIVMSG %s :%s', $self->channel, $mesg));
+        }
     }
 
     sub act {
         my $self    = $_[0];
         my $action  = $_[1] // q{};
         
-        $self->say(sprintf('%sACTION %s%s', SOH, $action, SOH));
+        if (length($action)) {
+            $self->say(sprintf('%sACTION %s%s', SOH, $action, SOH));
+        }
     }
 
     sub mode {
