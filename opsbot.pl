@@ -467,14 +467,27 @@ while (my $line = $bot->getline) {
         }
 
         # bot given operator privileges or had them taken away
-        elsif ($line =~ /\A:([^!]+)!\S+ MODE $channel ([\+\-]o) $me\s*\z/io) {
-            my $nick    = $1;
-            my $mode    = $2;
-            if ($mode eq '+o') {
+        elsif (
+            $line =~ /\A:([^!]+)!\S+ MODE $channel ([\-\+][\-\+\w]+) (.+)\z/io
+        ) {
+            my $sign    = q{};
+            my @mode    = ();
+
+            foreach my $char (split(//, $2)) {
+                if ($char eq '-' || $char eq '+') {
+                    $sign = $char;
+                    next;
+                }
+                push(@mode, $sign . $char);
+            }
+            my %affect  = map { $_ => shift(@mode) } split(/\s+/, $3);
+            my $change  = $affect{$me} ? $affect{$me} : q{};
+
+            if ($change eq '+o') {
                 $self->is_op(1);
                 $self->do_ops;
             }
-            else {
+            elsif ($change eq '-o') {
                 $self->is_op(0);
             }
         }
