@@ -646,18 +646,20 @@ while (my $line = $bot->getline) {
             return undef;
         }
         my $op      = $self->ops;
-        my $count   = 0;
+        my @who     = ();
 
         foreach my $nick ($self->names) {
             next unless $op->{$nick};
-            $self->mode('+o', $nick);
-            $count++;
+            push(@who, $nick);
         }
-        if ($nick && !$count) {
+        if ($nick && scalar(@who) == 0) {
             $self->say('nothing to do');
         }
+        if (scalar(@who)) {
+            $self->mode(('+' . 'o' x scalar(@who)), join(q{ }, @who));
+        }
 
-        return $count;
+        return scalar(@who);
     }
 
     # parse ops_file (if needed) and return hash ref of nicks
