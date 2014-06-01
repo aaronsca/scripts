@@ -645,6 +645,7 @@ while (my $line = $bot->getline) {
             ));
             return undef;
         }
+        my $ct      = 0;
         my $op      = $self->ops;
         my @who     = ();
 
@@ -655,11 +656,14 @@ while (my $line = $bot->getline) {
         if ($nick && scalar(@who) == 0) {
             $self->say('nothing to do');
         }
-        if (scalar(@who)) {
-            $self->mode(('+' . 'o' x scalar(@who)), join(q{ }, @who));
+        while (scalar(@who)) {
+            my @set = splice(@who, 0, 4);
+            $ct    += scalar(@set);
+
+            $self->mode(('+' . 'o' x scalar(@set)), join(q{ }, @set));
         }
 
-        return scalar(@who);
+        return $ct;
     }
 
     # parse ops_file (if needed) and return hash ref of nicks
